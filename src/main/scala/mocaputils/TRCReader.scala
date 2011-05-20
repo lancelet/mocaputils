@@ -6,7 +6,7 @@ import io.Source
 import scalaz.{ Validation, Success, Failure }
 
 /** Marker from a TRC file. */
-trait TRCMarker extends Iterable[Option[(Double, Double, Double)]] {
+trait TRCMarker extends Seq[Option[(Double, Double, Double)]] {
   /** Name of the marker. */
   val name: String
   /** Range of frames over which the marker is defined. */
@@ -15,7 +15,7 @@ trait TRCMarker extends Iterable[Option[(Double, Double, Double)]] {
   def apply(frame: Int): Option[(Double, Double, Double)]
 
   /** `Iterator` over marker coordinates. */
-  def iterator = new Iterator[Option[(Double, Double, Double)]] {
+  override def iterator = new Iterator[Option[(Double, Double, Double)]] {
     private var _index = range._1
     def hasNext = _index <= range._2
     def next = {
@@ -24,6 +24,7 @@ trait TRCMarker extends Iterable[Option[(Double, Double, Double)]] {
       result
     }
   }
+  override lazy val length = range._2 - range._1
 }
 
 /** TRC data.
