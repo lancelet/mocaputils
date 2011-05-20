@@ -53,13 +53,7 @@ object ReadUtils {
 	Failure("Wrong item count (found %d, expected %d): \"%s\"".format(
 	  lineTokens.length, items.length, line | None))
       } else {
-	val checks = for ((token, item) <- lineTokens zip items) yield {
-	  if (item.isDefined) {
-	    item.get == token
-	  } else {
-	    true
-	  }
-	}
+	val checks = (lineTokens zip items).filter(_._2.isDefined).map(t => t._1 == t._2.get)
 	if (checks.exists(_ == false)) {
 	  val i = checks.indexOf(false)
 	  Failure("Token mismatch: expected \"%s\", found \"%s\"" format (items(i), lineTokens(i)))
