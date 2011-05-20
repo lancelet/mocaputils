@@ -101,6 +101,8 @@ object ReadUtils {
   }
 
   /** Skips a specified number of items from an `Iterator[String]`.
+    *
+    * In this method, it is an error if a line is not available to be skipped. 
     * 
     * @param lines iterator from which to skip items
     * @param nLines number of lines to skip
