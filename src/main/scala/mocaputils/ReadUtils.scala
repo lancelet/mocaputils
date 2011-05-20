@@ -110,4 +110,72 @@ object ReadUtils {
     return None
   }
 
+  /** Fetches a single integer field.
+    *
+    * A single integer field is of the form:
+    * {{{
+    * name=42
+    * }}}
+    * The method checks that the field name is correct, and fetches the
+    * `Int` value.
+    *
+    * @param lines iterator from which to fetch the field
+    * @param name the name of the field
+    * @return the parsed integer value, or an error message */
+  def getSingleIntField(lines: Iterator[String], name: String): Validation[String, Int] = {
+    nextLine(lines).fold(
+      e => Failure(e),
+      s => {
+	val items = s.split("=")
+	if (items.size != 2) {
+	  return Failure("Could not parse \"%s\" as single field." format s)
+	}
+	val iName = items(0).trim
+	if (iName != name) {
+	  return Failure("Field name \"%s\" was not the expected \"%s\"." format(iName, name))
+	}
+	try {
+	  Success(items(1).trim.toInt)
+	} catch {
+	  case e: NumberFormatException => Failure("Could not parse \"%s\" as an Int." format(
+	    items(1).trim))
+	}
+      }
+    )
+  }
+
+  /** Fetches a single (just one) double field.
+    *
+    * A single double field is of the form:
+    * {{{
+    * name=42.0
+    * }}}
+    * The method checks that the field name is correct, and fetches the
+    * `Double` value.
+    *
+    * @param lines iterator from which to fetch the field
+    * @param name the name of the field
+    * @return the parsed `Double` value, or an error message */
+  def getSingleDoubleField(lines: Iterator[String], name: String): Validation[String, Double] = {
+    nextLine(lines).fold(
+      e => Failure(e),
+      s => {
+	val items = s.split("=")
+	if (items.size != 2) {
+	  return Failure("Could not parse \"%s\" as a single field." format s)
+	}
+	val iName = items(0).trim
+	if (iName != name) {
+	  return Failure("Field name \"%s\" was not the expected \"%s\"." format(iName, name))
+	}
+	try {
+	  Success(items(1).trim.toDouble)
+	} catch {
+	  case e: NumberFormatException => Failure("Could not parse \"%s\" as a Double." format(
+	    items(1).trim))
+	}
+      }
+    )
+  }
+
 }

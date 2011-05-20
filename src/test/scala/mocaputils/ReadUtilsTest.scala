@@ -92,4 +92,52 @@ class ReadUtilsTest extends FunSuite {
     }
   }
 
+  test("getSingleIntField - valid field") {
+    val it = List("NSamples=3").iterator
+    ReadUtils.getSingleIntField(it, "NSamples").fold(
+      e => fail(),
+      s => assert(s === 3)
+    )
+  }
+
+  test("getSingleIntField - not a field") {
+    val it = List("NSamples=3:Bar=42").iterator
+    ReadUtils.getSingleIntField(it, "NSamples").fold(
+      e => { /* error is expected */ },
+      s => fail()
+    )
+  }
+
+  test("getSingleIntField - incorrect name") {
+    val it = List("YSamples=3").iterator
+    ReadUtils.getSingleIntField(it, "NSamples").fold(
+      e => { /* error is expected */ },
+      s => fail()
+    )
+  }
+
+  test("getSingleDoubleField - valid field") {
+    val it = List("SampleRate=960.0").iterator
+    ReadUtils.getSingleDoubleField(it, "SampleRate").fold(
+      e => fail(),
+      s => assert(s === 960.0)
+    )
+  }
+
+  test("getSingleDoubleField - not a field") {
+    val it = List("SampleRate=960.0:Bar=42").iterator
+    ReadUtils.getSingleDoubleField(it, "SampleRate").fold(
+      e => { /* error is expected */ },
+      s => fail()
+    )
+  }
+
+  test("getSingleDoubleField - incorrect name") {
+    val it = List("SampleBar=960.0").iterator
+    ReadUtils.getSingleDoubleField(it, "NSamples").fold(
+      e => { /* error is expected */ },
+      s => fail()
+    )
+  }
+
 }

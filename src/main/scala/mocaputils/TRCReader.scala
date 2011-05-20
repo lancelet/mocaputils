@@ -60,6 +60,9 @@ object TRCReader {
 
   /** Reads a TRC file from a specified file name.
     *
+    * This method shouldn't throw an exception - any exceptions are a bug to be
+    * fixed.
+    *
     * @param name name of the file to read
     * @return data from the file, or an error message */
   def read(fileName: String): Validation[String, TRCData] = {
@@ -73,6 +76,9 @@ object TRCReader {
   /** Reads a TRC file from an `Iterator[String]` containing the lines of the
     * file.
     *
+    * This method shouldn't throw an exception - any exceptions are a bug to be
+    * fixed.
+    * 
     * @param inputLines lines of the file
     * @return data from the file, or an error message */
   def read(inputLines: Iterator[String]): Validation[String, TRCData] = {
