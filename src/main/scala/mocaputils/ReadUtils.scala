@@ -44,7 +44,7 @@ object ReadUtils {
     *   `None`)
     * @return successfully-read items, or an error message */
   def fetchLineAndCheck(lines: Iterator[String], items: Option[String]*): 
-  Validation[String, Seq[String]] = {
+  Validation[String, IndexedSeq[String]] = {
     val line = nextLine(lines)
     val tokens = for (l <- line) yield l.split("\t")
 
