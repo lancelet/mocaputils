@@ -5,34 +5,12 @@ import collection.immutable._
 import io.Source
 import scalaz.{ Validation, Success, Failure }
 
-/** Marker from a TRC file. */
-trait TRCMarker extends Seq[Option[(Double, Double, Double)]] {
-  /** Name of the marker. */
-  val name: String
-  /** Range of frames over which the marker is defined. */
-  val range: (Int, Int)
-  /** Obtain the marker position at the specified frame. */ 
-  def apply(frame: Int): Option[(Double, Double, Double)]
-
-  /** `Iterator` over marker coordinates. */
-  override def iterator = new Iterator[Option[(Double, Double, Double)]] {
-    private var _index = range._1
-    def hasNext = _index <= range._2
-    def next = {
-      val result = apply(_index)
-      _index = _index + 1
-      result
-    }
-  }
-  override lazy val length = range._2 - range._1
-}
-
 /** TRC data.
   * 
   * Trait for accessing data contained in a TRC file. */
 trait TRCData {
   /** Markers in the TRC data. */
-  val markers: Seq[TRCMarker]
+  val markers: Seq[GappedMarker]
   /** Name of the original TRC file, as specified by the file itself. */
   val internalFileName: String
   /** Data rate (Hz). */
@@ -53,7 +31,8 @@ trait TRCData {
   val origNumFrames: Int
 
   /** Gets a single marker. */
-  def getMarker(name: String): TRCMarker = markers.filter(_.name == name).head
+  def getMarker(name: String): GappedMarker = 
+    markers.filter(_.name == name).head
 }
 
 /** Reader of TRC files. */
@@ -89,7 +68,8 @@ object TRCReader {
     implicit def stringToSome(s: String): Some[String] = Some(s)
 
     // first line: file name
-    val fileName = fetchLineAndCheck(inputLines, "PathFileType", "4", "(X/Y/Z)", N).fold(
+    val fileName = fetchLineAndCheck(inputLines, "PathFileType", "4", 
+        "(X/Y/Z)", N).fold(
       e => return Failure(e),
       s => s(3)
     )
@@ -154,12 +134,9 @@ object TRCReader {
     // convert marker coordinates to markers
     assert(markerNames.size == markerCoords.size)
     val markers_ = for ((n, c) <- markerNames zip markerCoords) yield {
-      new TRCMarker {
-	override val name = n
-	override val range = (
-	  c.indexWhere(_.isDefined), c.lastIndexWhere(_.isDefined)
-	)
-        override def apply(frame: Int) = c(frame)
+      new GappedMarker {
+        override val name = n
+        override val co = c
       }
     }
 
@@ -177,7 +154,7 @@ object TRCReader {
 	override val origDataStartFrame = os
 	override val origNumFrames = on
 
-	private val markerMap: Map[String, TRCMarker] = Map() ++ 
+	private val markerMap: Map[String, GappedMarker] = Map() ++ 
 	  (markers.map(x => (x.name, x)))
 	override def getMarker(name: String) = markerMap(name)
       }

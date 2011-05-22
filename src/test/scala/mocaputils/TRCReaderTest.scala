@@ -43,7 +43,7 @@ class TRCReaderTest extends FunSuite {
 	  (1246.85059, 650.76019, 1447.70544),
 	  (1246.60803, 651.06555, 1447.99841)
 	).map(Some(_))
-	assert(s.getMarker("Head").toList === expCoords.toList)
+	assert(s.getMarker("Head").co === expCoords.toList)
 	assert(s.getMarker("Head").range === (0, 4))
       }
     )
