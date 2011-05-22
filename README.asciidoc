@@ -15,7 +15,7 @@ MocapUtils currently implements the following:
 == Installation ==
 
 Check out the project from GitHub (this command uses the Read-Only
-repository:
+repository):
 
   $ git clone git://github.com/lancelet/mocaputils.git
 
