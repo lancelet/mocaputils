@@ -1,6 +1,7 @@
 package mocaputils
 
-import collection.immutable._
+import scala.collection.immutable._
+import mocaputils.collection.immutable.RichSeq
 
 /** Marker that may have gaps in its `(x,y,z)` coordinates.
  *  
@@ -30,4 +31,7 @@ trait GappedMarker {
   /** `z`-values of the marker coordinates. */
   lazy val zs: IndexedSeq[Option[Double]] = co.map(_.map(_._3))
   
+  /** Sequence of gaps in the marker data (slices in which the coordinates
+   *  are not defined. */
+  lazy val gaps: Seq[(Int, Int)] = RichSeq(co).slicesWhere(!_.isDefined)
 }

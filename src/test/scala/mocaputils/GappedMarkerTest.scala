@@ -34,4 +34,8 @@ class GappedMarkerTest extends FunSuite {
     assert(m.range === (2,4))  
   }
   
+  test("check that gaps are correctly found") {
+    assert(m.gaps === List((0, 2), (5, 6)))
+  }
+  
 }
