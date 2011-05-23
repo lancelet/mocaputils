@@ -1,6 +1,6 @@
 package mocaputils
 
-import collection.immutable.Vector
+import scala.collection.immutable.Vector
 import org.scalatest.FunSuite
 import scalaz.{ Success, Failure }
 

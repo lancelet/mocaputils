@@ -1,6 +1,6 @@
 package mocaputils
 
-import collection.immutable.{ IndexedSeq }
+import scala.collection.immutable.{ IndexedSeq }
 import scalaz.{ Validation, Success, Failure }
 
 /** Useful utility functions for reading files. */
