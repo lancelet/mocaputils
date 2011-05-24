@@ -32,6 +32,6 @@ trait GappedMarker {
   lazy val zs: IndexedSeq[Option[Double]] = co.map(_.map(_._3))
   
   /** Sequence of gaps in the marker data (slices in which the coordinates
-   *  are not defined. */
+   *  are not defined). */
   lazy val gaps: Seq[(Int, Int)] = RichSeq(co).slicesWhere(!_.isDefined)
 }
