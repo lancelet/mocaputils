@@ -12,6 +12,7 @@ class GapFillerTest extends FunSuite with ShouldMatchers {
       val co = Vector[Option[(Double, Double, Double)]](
         None, None, Some(1, 2, 3), Some(4, 5, 6), None, Some(8, 9, 10), None
       )
+      val fs = 100.0
     }
     val m = GapFiller.fillGapsLerp(mGap).get
     val xs = Vector[Double](1, 1, 1, 4, 6, 8, 8)
@@ -28,6 +29,7 @@ class GapFillerTest extends FunSuite with ShouldMatchers {
       val co = Vector[Option[(Double, Double, Double)]](
         Some(1,1,1), None, None, None, None, Some(6,6,6)
       )
+      val fs = 100.0
     }
     val m = GapFiller.fillGapsLerp(mGap).get
     val ss = Vector[Double](1, 2, 3, 4, 5, 6)

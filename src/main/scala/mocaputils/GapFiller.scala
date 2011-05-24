@@ -47,6 +47,7 @@ object GapFiller {
     // new marker
     Some(new Marker {
       val name = m.name
+      val fs = m.fs
       val co = coVector
     })
   }

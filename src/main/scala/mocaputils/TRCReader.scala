@@ -137,6 +137,7 @@ object TRCReader {
       new GappedMarker {
         override val name = n
         override val co = c
+        override val fs = cr
       }
     }
 

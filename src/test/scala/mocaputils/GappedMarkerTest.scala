@@ -10,6 +10,7 @@ class GappedMarkerTest extends FunSuite {
     val co = Vector[Option[(Double, Double, Double)]](
       None, None, Some(1,2,3), Some(4,5,6), Some(7,8,9), None
     )
+    val fs = 100.0
   }
   
   test("check that xs correctly fetches x coordinates") {

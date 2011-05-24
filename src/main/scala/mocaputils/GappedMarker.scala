@@ -20,6 +20,9 @@ trait GappedMarker {
   /** Coordinates of the marker. */
   val co: IndexedSeq[Option[(Double, Double, Double)]]
 
+  /** Sample frequency (Hz). */
+  val fs: Double
+  
   /** Range of frames (inclusive) over which the marker is defined. */
   lazy val range: (Int, Int) = 
     (co.indexWhere(_.isDefined), co.lastIndexWhere(_.isDefined)) 

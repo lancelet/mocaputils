@@ -11,6 +11,7 @@ class MarkerTest extends FunSuite with ShouldMatchers {
     val co = Vector[(Double, Double, Double)](
       (1,2,3), (4,5,6), (7,8,9)
     )
+    val fs = 100.0
   }
   
   test("check that xs correctly fetches x coordinates") {
@@ -27,5 +28,7 @@ class MarkerTest extends FunSuite with ShouldMatchers {
     val expected = Vector[Double](3, 6, 9)
     m.zs should be (expected)
   }
+  
+  test("bandwidth") (pending)
   
 }
