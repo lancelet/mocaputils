@@ -11,6 +11,7 @@ MocapUtils currently implements the following:
 
   - Reading Motion Analysis `*.trc` files.
   - Reading Motion Analysis `*.forces` files.
+  - Linear gap filling for marker data.
 
 == Installation ==
 
