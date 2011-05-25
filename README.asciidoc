@@ -33,3 +33,13 @@ everything it needs for the project.  Within `sbt`, you can then run:
   > test
 
 This will run the packaged unit tests for the project.
+
+In order to make the library available via Apache Ivy on your local
+machine, run (from inside `sbt`):
+
+  > publish-local
+
+This will make the library available as the artefact:
+
+  "MEPC" %% "mocaputils" % "0.2-SNAPSHOT"
+ 

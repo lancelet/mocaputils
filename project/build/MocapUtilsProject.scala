@@ -11,6 +11,14 @@ with Eclipsify {
   val scalaTest = "org.scalatest" %% "scalatest" % "1.4.1"
   // val scalaCheck = "org.scala-tools.testing" %% "scalacheck" % "1.8"
 
+  // other repos
+  val scalaNLPRepo = "ScalaNLP" at "http://repo.scalanlp.org/repo"
+  val ondexRepo = "ondex" at 
+    "http://ondex.rothamsted.bbsrc.ac.uk/nexus/content/groups/public"
+  
+  // scalasignal
+  val scalaSignal = "GitHub" %% "scalasignal" % "0.3-SNAPSHOT"
+  
   // enable unchecked warnings
   //override def compileOptions = super.compileOptions ++ Seq(Unchecked)
 
