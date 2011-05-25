@@ -1,7 +1,8 @@
 package mocaputils
 
 import scala.collection.immutable._
-import signal.PSD
+import signal.{ PSD, Detrend }
+import Detrend.detrend
 
 /** A marker (without any gaps). */
 trait Marker {
@@ -21,9 +22,9 @@ trait Marker {
   
   /** Estimate of the bandwidth of the marker. */
   def bandwidth(powerFraction: Double = 0.95): Double = {
-    val xbw = PSD.bandwidth(PSD.psd(xs, fs), powerFraction)
-    val ybw = PSD.bandwidth(PSD.psd(ys, fs), powerFraction)
-    val zbw = PSD.bandwidth(PSD.psd(zs, fs), powerFraction)
+    val xbw = PSD.bandwidth(PSD.psd(detrend(xs), fs), powerFraction)
+    val ybw = PSD.bandwidth(PSD.psd(detrend(ys), fs), powerFraction)
+    val zbw = PSD.bandwidth(PSD.psd(detrend(zs), fs), powerFraction)
     List(xbw, ybw, zbw).max
   }
 }
