@@ -16,6 +16,13 @@ with Eclipsify {
   val ondexRepo = "ondex" at 
     "http://ondex.rothamsted.bbsrc.ac.uk/nexus/content/groups/public"
   
+  // JFreeChart
+  val JCommon = "jfree" % "jcommon" % "1.0.16"
+  val JFreeChart = "jfree" % "jfreechart" % "1.0.13"
+  val XMLGraphicsCommons = "org.apache.xmlgraphics" % "xmlgraphics-commons" % 
+      "1.3.1"
+  val IText = "com.lowagie" % "itext" % "2.1.5" intransitive()    
+  
   // scalasignal
   val scalaSignal = "GitHub" %% "scalasignal" % "0.3-SNAPSHOT"
   
