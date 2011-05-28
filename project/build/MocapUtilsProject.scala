@@ -26,6 +26,9 @@ with Eclipsify {
   // scalasignal
   val scalaSignal = "GitHub" %% "scalasignal" % "0.3-SNAPSHOT"
   
+  // SignalML Repo (required for ScalaSignal / JTransforms)
+  val signalmlRepo = "SignalMLRepo" at "http://signalml.org/maven/repository"
+  
   // enable unchecked warnings
   //override def compileOptions = super.compileOptions ++ Seq(Unchecked)
 
