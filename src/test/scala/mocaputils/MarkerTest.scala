@@ -14,6 +14,17 @@ class MarkerTest extends FunSuite with ShouldMatchers {
     val fs = 100.0
   }
   
+  // a marker with a discontinuity
+  private val mWithDiscont = new Marker {
+    val name = "Test-WithDiscont"
+    val co = Vector[(Double, Double, Double)](
+      (0,0,0), (0,0,0), (0,0,0), (0,0,0),
+      (5,5,5), (10,10,10), (20,20,20),
+      (30,30,30), (30,30,30), (30,30,30), (30.1, 30.1, 30.1)
+    )
+    val fs = 100.0
+  }
+  
   test("check that xs correctly fetches x coordinates") {
     val expected = Vector[Double](1, 4, 7)
     m.xs should be (expected)
@@ -27,6 +38,13 @@ class MarkerTest extends FunSuite with ShouldMatchers {
   test("check that zs correctly fetches z coordinates") {
     val expected = Vector[Double](3, 6, 9)
     m.zs should be (expected)
+  }
+  
+  test("discontinuities") {
+    val expected1 = Seq[(Int, Int)]((3, 7))
+    mWithDiscont.discontinuities(1.0) should be (expected1)
+    val expected2 = Seq[(Int, Int)]((3, 7), (9, 10))
+    mWithDiscont.discontinuities(0.16) should be (expected2)
   }
   
   test("bandwidth") (pending)
