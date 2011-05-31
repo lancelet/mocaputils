@@ -16,16 +16,18 @@ trait ForcePlate {
   /** Get Mz at a specific frame. */
   def getMz(frame: Int): Double
 
-  /** IndexedSeq over items that are defined for the whole range. */
+  /** IndexedSeq over items that are defined for the whole range. 
+   *  This is used to obtain the sequences below. */
   private def rangeSeq[T](fetch: Int => T) = 
     (range._1 to range._2).map(fetch(_)).toIndexedSeq
 
   /** `IndexedSeq` for force values. */
-  lazy val forceIterator: IndexedSeq[(Double, Double, Double)] = rangeSeq(getForce)
+  lazy val forceSeq: IndexedSeq[(Double, Double, Double)] = 
+    rangeSeq(getForce)
   /** `IndexedSeq` for COP values. */
-  lazy val copIterator: IndexedSeq[(Double, Double, Double)] = rangeSeq(getCOP)
+  lazy val copSeq: IndexedSeq[(Double, Double, Double)] = rangeSeq(getCOP)
   /** `IndexedSeq` for Mz values. */
-  lazy val mzIterator: IndexedSeq[Double] = rangeSeq(getMz)
+  lazy val mzSeq: IndexedSeq[Double] = rangeSeq(getMz)
 }
 
 /** Data from a `*.forces` file. */
