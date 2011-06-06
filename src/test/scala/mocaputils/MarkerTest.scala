@@ -49,4 +49,6 @@ class MarkerTest extends FunSuite with ShouldMatchers {
   
   test("bandwidth") (pending)
   
+  test("butter2") (pending)
+  
 }

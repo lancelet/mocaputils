@@ -2,12 +2,12 @@ package mocaputils
 
 import scala.collection.immutable._
 import scala.math.sqrt
-import signal.{ PSD, Detrend }
+import signal.{ Butter, FiltFilt, PSD, Detrend }
 import Detrend.detrend
 import mocaputils.collection.immutable.RichSeq
 
 /** A marker (without any gaps). */
-trait Marker {
+trait Marker { self =>
   
   /** Name of the marker. */
   val name: String
@@ -59,6 +59,28 @@ trait Marker {
     }    
     // find regions where deltas are > threshold
     RichSeq(deltas).slicesWhere(_ > threshold)
+  }
+  
+  /** Applies a second-order forward-reverse low-pass Butterworth filter to
+   *  the marker data.
+   *  
+   *  @param fc cutoff frequency
+   *  @return new marker with filtered coordinates */
+  def butter2(fc: Double): Marker = new Marker {
+    val name = self.name
+    val fs = self.fs
+    private val sos = Butter.butterSOSEven(2, fc / (fs / 2)).head
+    private val b = List(sos.b0, sos.b1, sos.b2)
+    private val a = List(1, sos.a1, sos.a2)
+    override lazy val xs = FiltFilt.filtfilt(b, a, self.xs)
+    override lazy val ys = FiltFilt.filtfilt(b, a, self.ys)
+    override lazy val zs = FiltFilt.filtfilt(b, a, self.zs)
+    assert(xs.length == ys.length)
+    assert(xs.length == zs.length)
+    override val co = new IndexedSeq[(Double, Double, Double)] {
+      val length = xs.length
+      def apply(item: Int) = (xs(item), ys(item), zs(item))
+    }
   }
   
 }
