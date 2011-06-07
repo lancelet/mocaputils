@@ -12,6 +12,9 @@ MocapUtils currently implements the following:
   - Reading Motion Analysis `*.trc` files.
   - Reading Motion Analysis `*.forces` files.
   - Linear gap filling for marker data.
+  - Low-pass filtering of marker coordinate data using a second-order 
+    Butterworth filter.
+  - Set of plotting utilities for making JFreeChart easier to use from Scala.
 
 == Installation ==
 
