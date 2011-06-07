@@ -69,6 +69,7 @@ trait Marker { self =>
   def butter2(fc: Double): Marker = new Marker {
     val name = self.name
     val fs = self.fs
+    // pull Butterworth coefficients from a single second-order-section filter
     private val sos = Butter.butterSOSEven(2, fc / (fs / 2)).head
     private val b = List(sos.b0, sos.b1, sos.b2)
     private val a = List(1, sos.a1, sos.a2)

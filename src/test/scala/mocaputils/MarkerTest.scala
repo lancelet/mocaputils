@@ -3,6 +3,7 @@ package mocaputils
 import collection.immutable._
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
+import Comparisons._
 
 class MarkerTest extends FunSuite with ShouldMatchers {
 
@@ -49,6 +50,24 @@ class MarkerTest extends FunSuite with ShouldMatchers {
   
   test("bandwidth") (pending)
   
-  test("butter2") (pending)
+  test("butter2") {
+    val marker = new Marker {
+      val name = "Test"
+      val fs = 10.0
+      val co = Vector[(Double, Double, Double)] (
+        (0,8,1), (1,-3,1), (6,0,0), (2,2,-1), (3,5,2), (1,8,0), (6,7,1)
+      )
+    }
+    val xExpected = Vector(-0.10493, 1.07792, 2.09518, 2.93073, 3.77711, 
+                            4.86018, 6.18174)
+    val yExpected = Vector(7.9450, 5.2331, 3.4951, 3.1033, 3.7941, 5.0689, 
+                           6.5573)
+    val zExpected = Vector(0.98498, 0.68859, 0.47804, 0.41952, 0.51461, 
+                           0.71039, 0.95353)
+    val filtMarker = marker.butter2(1.0)
+    eqd(filtMarker.xs, xExpected, 1e-5)
+    eqd(filtMarker.ys, yExpected, 1e-4)
+    eqd(filtMarker.zs, zExpected, 1e-5)
+  }
   
 }
