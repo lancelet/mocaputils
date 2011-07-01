@@ -27,8 +27,11 @@ object Dependencies {
   val iText       = "com.lowagie" % "itext" % "2.1.5" intransitive()
   val scalaz      = "org.scalaz" %% "scalaz-core" % "6.0-SNAPSHOT"
   val scalaTest   = "org.scalatest" %% "scalatest" % "1.4.1" % "test"
+  val scalaCheck  = "org.scala-tools.testing" %% "scalacheck" % "1.9" % "test"
+  val scalala     = "org.scalala" %% "scalala" % "1.0.0.RC2-SNAPSHOT"
   val allDependencies = Seq(
-    jCommon, jFreeChart, xmlGraphics, iText, scalaz, scalaTest
+    jCommon, jFreeChart, xmlGraphics, iText, scalaz, scalaTest, scalaCheck, 
+    scalala
   )
 }
 
@@ -42,6 +45,7 @@ object MocapBuild extends Build {
 				  libraryDependencies := allDependencies,
 				  resolvers := allResolvers
 				)) dependsOn(scalaSignal)
+	// can add scalacOptions := Seq("-unchecked") to settings above
   val scalaSignalUri = uri("git://github.com/lancelet/scalasignal.git")
   lazy val scalaSignal = RootProject(scalaSignalUri)
 }
