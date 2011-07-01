@@ -119,26 +119,26 @@ object ForceReader {
     assert(nPlates_ == plateValues.size)
     val plates_ = for (i <- 0 until nPlates_) yield {
       new ForcePlate {
-	override val range = (0, plateValues.size)
-	override def getForce(frame: Int) = {
-	  val v = plateValues(i)(frame)
-	  (v(0), v(1), v(2))
-	}
-	override def getCOP(frame: Int) = {
-	  val v = plateValues(i)(frame)
-	  (v(3), v(4), v(5))
-	}
-	override def getMz(frame: Int) = plateValues(i)(frame)(6)
+        override val range = (0, plateValues.size)
+        override def getForce(frame: Int) = {
+          val v = plateValues(i)(frame)
+          (v(0), v(1), v(2))
+        }
+        override def getCOP(frame: Int) = {
+          val v = plateValues(i)(frame)
+          (v(3), v(4), v(5))
+        }
+        override def getMz(frame: Int) = plateValues(i)(frame)(6)
       }
     }
 
     // convert result to a Forces trait
     Success(
       new Forces {
-	override val plates = plates_
-	override val nPlates = nPlates_
-	override val sampleRate = sampleRate_
-	override val numSamples = numSamples_
+        override val plates = plates_
+        override val nPlates = nPlates_
+        override val sampleRate = sampleRate_
+        override val numSamples = numSamples_
       }
     )
   }
