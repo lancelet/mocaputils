@@ -6,7 +6,9 @@ object GapFiller {
 
   /** Fill gaps in marker data via linear interpolation. */
   def fillGapsLerp(m: GappedMarker, maxSize: Option[Int] = None): 
-  Option[Marker] = { 
+  Option[Marker] = {
+    // check that the marker has some coordinates (it must exist)
+    assert(m.exists)
     // check the maximum gap size against what we're allowed to fill
     if (maxSize.isDefined) {
       if (m.gaps.map(x => x._2 - x._1).max > maxSize.get) {

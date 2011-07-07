@@ -20,6 +20,9 @@ trait GappedMarker {
   /** Coordinates of the marker. */
   val co: IndexedSeq[Option[(Double, Double, Double)]]
 
+  /** Whether the marker exists - it exists if some coordinates are present. */
+  lazy val exists: Boolean = co.exists(_.isDefined)
+  
   /** Sample frequency (Hz). */
   val fs: Double
   

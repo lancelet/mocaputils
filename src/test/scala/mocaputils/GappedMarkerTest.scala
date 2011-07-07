@@ -39,4 +39,14 @@ class GappedMarkerTest extends FunSuite {
     assert(m.gaps === List((0, 2), (5, 6)))
   }
   
+  test("check the exists flag") {
+    assert(m.exists === true)
+    val mNoCoords = new GappedMarker {
+      val name = "NotPresent"
+      val co = Vector[Option[(Double, Double, Double)]](None, None, None)
+      val fs = 100.0
+    }
+    assert(mNoCoords.exists === false)
+  }
+  
 }
