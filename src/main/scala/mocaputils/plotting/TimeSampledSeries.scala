@@ -6,12 +6,14 @@ import scala.collection.immutable._
  * 
  *  @param name name of the series
  *  @param x time samples
- *  @param fs sampling frequency */
+ *  @param fs sampling frequency 
+ *  @param offset offset in time for the first sample */
 case class TimeSampledSeries(
   name: String, 
   x: IndexedSeq[Double], 
-  fs: Double = 1) 
+  fs: Double = 1,
+  offset: Double = 0) 
 extends XYSeries {
   val length = x.length
-  def apply(item: Int) = (fs * item, x(item))
+  def apply(item: Int) = (item / fs + offset, x(item))
 }
