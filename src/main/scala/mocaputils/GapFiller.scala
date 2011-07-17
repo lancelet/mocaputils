@@ -8,7 +8,7 @@ object GapFiller {
   def fillGapsLerp(m: GappedMarker, maxSize: Option[Int] = None): 
   Option[Marker] = {
     // check that the marker has some coordinates (it must exist)
-    assert(m.exists)
+    assert(m.exists, "Marker \"%s\" has no coordinates at all!" format m.name)
     // check the maximum gap size against what we're allowed to fill
     if (maxSize.isDefined) {
       if (m.gaps.map(x => x._2 - x._1).max > maxSize.get) {
