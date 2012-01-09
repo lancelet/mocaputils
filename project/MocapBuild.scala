@@ -25,11 +25,11 @@ object Dependencies {
   val jFreeChart  = "jfree" % "jfreechart" % "1.0.13"
   val xmlGraphics = "org.apache.xmlgraphics" % "xmlgraphics-commons" % "1.3.1"
   val iText       = "com.lowagie" % "itext" % "2.1.5" intransitive()
-  val scalaz      = "org.scalaz" %% "scalaz-core" % "6.0.4-SNAPSHOT"
-  val scalaTest   = "org.scalatest" % "scalatest_2.9.1" % "1.6.1" % "test"
-  val scalaCheck  = "org.scala-tools.testing" % "scalacheck_2.9.1" % "1.9" % 
+  val scalaz      = "org.scalaz" %% "scalaz-core" % "7.0-SNAPSHOT"
+  val scalaTest   = "org.scalatest" %% "scalatest" % "1.6.1" % "test"
+  val scalaCheck  = "org.scala-tools.testing" %% "scalacheck" % "1.9" % 
                       "test"
-  val scalala     = "org.scalala" % "scalala_2.9.0" % "1.0.0.RC2-SNAPSHOT"
+  val scalala     = "org.scalala" %% "scalala" % "1.0.0.RC2-SNAPSHOT"
   val allDependencies = Seq(
     jCommon, jFreeChart, xmlGraphics, iText, scalaz, scalaTest, scalaCheck, 
     scalala
