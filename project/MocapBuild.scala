@@ -23,7 +23,7 @@ object Resolvers {
 object Dependencies {
   val jCommon     = "org.jfree" % "jcommon" % "1.0.17"
   val jFreeChart  = "org.jfree" % "jfreechart" % "1.0.14"
-  val xmlGraphics = "org.apache.xmlgraphics" % "xmlgraphics-commons" % "1.3.1"
+  val xmlGraphics = "org.apache.xmlgraphics" % "xmlgraphics-commons" % "1.4"
   val iText       = "com.lowagie" % "itext" % "2.1.5" intransitive()
   val scalaz      = "org.scalaz" %% "scalaz-core" % "7.0-SNAPSHOT"
   val scalaTest   = "org.scalatest" %% "scalatest" % "1.6.1" % "test"
