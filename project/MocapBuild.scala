@@ -13,9 +13,9 @@ object BuildSettings {
 }
 
 object Resolvers {
-  val sonatype = "Sonatype" at 
-  	"https://oss.sonatype.org/content/groups/public"
-  val allResolvers = Seq(sonatype)
+  val sonatype = "Sonatype" at "https://oss.sonatype.org/content/groups/public"
+  val mvnrepo = "MvnRepository" at "http://mvnrepository.com/"
+  val allResolvers = Seq(sonatype, mvnrepo)
 }
 
 object Dependencies {
