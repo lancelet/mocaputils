@@ -13,13 +13,9 @@ object BuildSettings {
 }
 
 object Resolvers {
-  //val scalaToolsSnapshots = "Scala-Tools Snapshots" at
-  //  "http://scala-tools.org/repo-snapshots"
   val sonatype = "Sonatype" at 
   	"https://oss.sonatype.org/content/groups/public"
-  val ondex = "Ondex" at
-    "http://ondex.rothamsted.bbsrc.ac.uk/nexus/content/groups/public"
-  val allResolvers = Seq(/*scalaToolsSnapshots,*/ sonatype, ondex)
+  val allResolvers = Seq(sonatype)
 }
 
 object Dependencies {
