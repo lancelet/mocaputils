@@ -3,7 +3,7 @@ import Keys._
 
 object BuildSettings {
   val buildOrganization = "com.github.mocaputils"
-  val buildScalaVersion = "2.9.1-1"
+  val buildScalaVersion = "2.9.2"
   val buildVersion      = "0.2-SNAPSHOT"
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -23,10 +23,9 @@ object Dependencies {
   val jFreeChart  = "org.jfree" % "jfreechart" % "1.0.14"
   val xmlGraphics = "org.apache.xmlgraphics" % "xmlgraphics-commons" % "1.4"
   val iText       = "com.lowagie" % "itext" % "2.1.5" intransitive()
-  val scalaz      = "org.scalaz" % "scalaz-core_2.9.1" % "7.0-SNAPSHOT"
-  val scalaTest   = "org.scalatest" %% "scalatest" % "1.7.1" % "test"
-  val scalaCheck  = "org.scala-tools.testing" % "scalacheck_2.9.0" % "1.9" % 
-                      "test"
+  val scalaz      = "org.scalaz" %% "scalaz-core" % "7.0-SNAPSHOT"
+  val scalaTest   = "org.scalatest" %% "scalatest" % "1.7.2" % "test"
+  val scalaCheck  = "org.scalacheck" %% "scalacheck" % "1.9" % "test"
   val scalala     = "org.scalala" % "scalala_2.9.1" % "1.0.0.RC2"
   val allDependencies = Seq(
     jCommon, jFreeChart, xmlGraphics, iText, scalaz, scalaTest, scalaCheck, 

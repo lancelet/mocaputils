@@ -13,3 +13,4 @@ project-old/plugins/src_managed
 .scala_dependencies
 .settings
 project/boot
+.cache
