@@ -17,24 +17,24 @@ class VirtualMarkerTest extends FunSuite with ShouldMatchers {
     val marker1 = new Marker {
       val name = "marker1"
       val fs = 1.0
-      val co = IndexedSeq[(Double, Double, Double)]((1,1,0), (0,0,0))
+      val co = IndexedSeq[Vec3](Vec3(1,1,0), Vec3(0,0,0))
     }
     val marker2 = new Marker {
       val name = "marker2"
       val fs = 1.0
-      val co = IndexedSeq[(Double, Double, Double)]((2,1,0), (0,-1,0))
+      val co = IndexedSeq[Vec3](Vec3(2,1,0), Vec3(0,-1,0))
     }
     val marker3 = new Marker {
       val name = "marker3"
       val fs = 1.0
-      val co = IndexedSeq[(Double, Double, Double)]((1,2,0), (1,0,0))
+      val co = IndexedSeq[Vec3](Vec3(1,2,0), Vec3(1,0,0))
     }
     val markers = Seq(marker1, marker2, marker3)
     val firstCo = markers.map(_.co(0))
     
     // construct the virtual marker, using the first frame of the markers
     //  as the reference.  this marker is at (0,0,0)
-    val vmarker = new VirtualMarker("virtual", (0,0,0), firstCo zip markers)
+    val vmarker = new VirtualMarker("virtual", Vec3(0,0,0), firstCo zip markers)
     
     // check the coordinates of the virtual marker at frames 0 and 1
     vmarker.xs(0) should be (0.0 plusOrMinus eps)

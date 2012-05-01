@@ -1,7 +1,9 @@
 package mocaputils
 
 import java.io.IOException
+import scala.collection.breakOut
 import scala.collection.immutable._
+import scala.collection.mutable.ArrayBuffer
 import io.Source
 import scalaz.{ Validation, Success, Failure }
 
@@ -10,7 +12,7 @@ import scalaz.{ Validation, Success, Failure }
   * Trait for accessing data contained in a TRC file. */
 trait TRCData {
   /** Markers in the TRC data. */
-  val markers: Seq[GappedMarker]
+  val markers: IndexedSeq[GappedMarker]
   /** Name of the original TRC file, as specified by the file itself. */
   val internalFileName: String
   /** Data rate (Hz). */
@@ -116,50 +118,74 @@ object TRCReader {
     }
 
     // read coordinate lines from the remainder of the file
-    val groupedCoords = for (line <- inputLines) yield {
+    val groupedCoords: ArrayBuffer[ArrayBuffer[Option[Vec3]]] =
+      ArrayBuffer()
+    for (line <- inputLines) {
       val ords = line.split("\t", -1).drop(2).take(nm * 3).map(_.trim)
       assert(ords.length == nm * 3)
-      val ordsWrappedInOption = ords.grouped(3).map( x =>
-	if (x.exists(_.isEmpty)) {
-	  None
-	} else {
-	  val d = x.map(_.toDouble)
-	  Some((d(0), d(1), d(2)))
-	}
-      )
-      ordsWrappedInOption.toIndexedSeq
+      val coordLine: ArrayBuffer[Option[Vec3]] = ArrayBuffer()
+      for (o3 <- ords.grouped(3)) {
+        val appendValue = if (o3.exists(_.isEmpty)) {
+          None
+        } else {
+          val d = o3.map(_.toDouble)
+          Some(Vec3(d(0), d(1), d(2)))
+        }
+        coordLine += appendValue
+      }
+      groupedCoords += coordLine
     }
-    val markerCoords = groupedCoords.toIndexedSeq.transpose
+    val markerCoords = groupedCoords.transpose
+    
+    /*
+    type D3 = (Double, Double, Double)
+    val groupedCoords: IndexedSeq[IndexedSeq[Option[D3]]] =
+      inputLines.map(line => {
+        val ords = line.split("\t", -1).drop(2).take(nm * 3).map(_.trim)
+        assert(ords.length == nm * 3)
+        val optionCoords: IndexedSeq[Option[D3]] =
+          (for (o3 <- ords.grouped(3)) yield {
+            if (o3.exists(_.isEmpty)) None
+            else {
+              val d = o3.map(_.toDouble)
+              Some((d(0), d(1), d(2)))
+            }
+          }).toIndexedSeq
+      })(breakOut)
+    val markerCoords = groupedCoords.transpose
+    */
 
     // convert marker coordinates to markers
     assert(markerNames.size == markerCoords.size)
-    val markers_ = for ((n, c) <- markerNames zip markerCoords) yield {
-      new GappedMarker {
-        override val name = n
-        override val co = c
-        override val fs = cr
-      }
-    }
+    val markers: IndexedSeq[GappedMarker] = 
+      (for ((n, c) <- markerNames zip markerCoords) yield
+         GappedMarkerCase(n, c.toIndexedSeq, cr))(breakOut)
 
     // return the TRC data
-    Success(
-      new TRCData {
-	override val markers = markers_.toIndexedSeq
-	override val internalFileName = fileName
-	override val dataRate = dr
-	override val cameraRate = cr
-	override val numFrames = nf
-	override val numMarkers = nm
-	override val units = u
-	override val origDataRate = or
-	override val origDataStartFrame = os
-	override val origNumFrames = on
-
-	private val markerMap: Map[String, GappedMarker] = Map() ++ 
-	  (markers.map(x => (x.name, x)))
-	override def getMarker(name: String) = markerMap(name)
-      }
-    )
+    Success(TRCDataCase(markers, fileName, dr, cr, nf, nm, u, or, os, on))
+  }
+  
+  private final case class GappedMarkerCase(
+    name: String,
+    co: IndexedSeq[Option[Vec3]],
+    fs: Double
+  ) extends GappedMarker
+  
+  private final case class TRCDataCase(
+    markers: IndexedSeq[GappedMarker],
+    internalFileName: String,
+    dataRate: Double,
+    cameraRate: Double,
+    numFrames: Int,
+    numMarkers: Int,
+    units: String,
+    origDataRate: Double,
+    origDataStartFrame: Int,
+    origNumFrames: Int
+  ) extends TRCData {
+    private val markerMap: Map[String, GappedMarker] =
+      markers.map(x => (x.name, x))(breakOut)
+    override def getMarker(name: String) = markerMap(name)
   }
 
 }

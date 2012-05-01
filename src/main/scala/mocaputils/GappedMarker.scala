@@ -18,7 +18,7 @@ trait GappedMarker {
   val name: String
 
   /** Coordinates of the marker. */
-  val co: IndexedSeq[Option[(Double, Double, Double)]]
+  val co: IndexedSeq[Option[Vec3]]
 
   /** Whether the marker exists - it exists if some coordinates are present. */
   lazy val exists: Boolean = co.exists(_.isDefined)
@@ -31,11 +31,11 @@ trait GappedMarker {
     (co.indexWhere(_.isDefined), co.lastIndexWhere(_.isDefined)) 
   
   /** `x`-values of the marker coordinates. */
-  lazy val xs: IndexedSeq[Option[Double]] = co.map(_.map(_._1))
+  lazy val xs: IndexedSeq[Option[Double]] = co.map(_.map(_.x))
   /** `y`-values of the marker coordinates. */
-  lazy val ys: IndexedSeq[Option[Double]] = co.map(_.map(_._2))
+  lazy val ys: IndexedSeq[Option[Double]] = co.map(_.map(_.y))
   /** `z`-values of the marker coordinates. */
-  lazy val zs: IndexedSeq[Option[Double]] = co.map(_.map(_._3))
+  lazy val zs: IndexedSeq[Option[Double]] = co.map(_.map(_.z))
   
   /** Sequence of gaps in the marker data (slices in which the coordinates
    *  are not defined). */

@@ -14,6 +14,8 @@ import scalala.tensor.{:: => $colon$colon}
 import scalala.tensor.VectorCol
 import scalala.tensor.Matrix
 
+import mocaputils.Vec3
+
 /** Result from the Veldpaus method of computing a rigid body transformation.
  * 
  *  The transformation is: `y = s*[R]*x + v`.
@@ -34,10 +36,10 @@ case class VeldpausResult(
   require(v.size == 3)
   require(xbar.size == 3)
   require(ybar.size == 3)
-  def apply(x: (Double, Double, Double)): (Double, Double, Double) = {
-    val xvec = DenseVectorCol(x._1, x._2, x._3)
+  def apply(x: Vec3): Vec3 = {
+    val xvec = DenseVectorCol(x.x, x.y, x.z)
     val yvec = R * s * xvec + v
-    (yvec(0), yvec(1), yvec(2))
+    Vec3(yvec(0), yvec(1), yvec(2))
   }
 }
 
@@ -70,13 +72,13 @@ object Veldpaus {
    *    algorithm.  The default value of 1.0e-10 is taken from
    *    Veldpaus et al. (1988). */
   def veldpaus(
-    points: Traversable[((Double, Double, Double), (Double, Double, Double))],
+    points: Traversable[(Vec3, Vec3)],
     tol: Double = 1.0e-10): VeldpausResult =
   {
     // find x,y coordinates, centroids, and positions relative to centroids
     val (xc, yc) = points.toList.unzip
-    val x = xc.map(v => DenseVectorCol(v._1, v._2, v._3))
-    val y = yc.map(v => DenseVectorCol(v._1, v._2, v._3))
+    val x = xc.map(v => DenseVectorCol(v.x, v.y, v.z))
+    val y = yc.map(v => DenseVectorCol(v.x, v.y, v.z))
     def meanv(q: Seq[DenseVectorCol[Double]]): DenseVectorCol[Double] =
       q.reduceLeft(_ + _) / q.length.toDouble
     val (xbar, ybar) = (meanv(x), meanv(y))

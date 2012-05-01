@@ -9,8 +9,8 @@ class MarkerTest extends FunSuite with ShouldMatchers {
 
   private val m = new Marker {
     val name = "Test"
-    val co = Vector[(Double, Double, Double)](
-      (1,2,3), (4,5,6), (7,8,9)
+    val co = Vector[Vec3](
+      Vec3(1,2,3), Vec3(4,5,6), Vec3(7,8,9)
     )
     val fs = 100.0
   }
@@ -18,10 +18,10 @@ class MarkerTest extends FunSuite with ShouldMatchers {
   // a marker with a discontinuity
   private val mWithDiscont = new Marker {
     val name = "Test-WithDiscont"
-    val co = Vector[(Double, Double, Double)](
-      (0,0,0), (0,0,0), (0,0,0), (0,0,0),
-      (5,5,5), (10,10,10), (20,20,20),
-      (30,30,30), (30,30,30), (30,30,30), (30.1, 30.1, 30.1)
+    val co = Vector[Vec3](
+      Vec3(0,0,0), Vec3(0,0,0), Vec3(0,0,0), Vec3(0,0,0),
+      Vec3(5,5,5), Vec3(10,10,10), Vec3(20,20,20),
+      Vec3(30,30,30), Vec3(30,30,30), Vec3(30,30,30), Vec3(30.1, 30.1, 30.1)
     )
     val fs = 100.0
   }
@@ -54,8 +54,9 @@ class MarkerTest extends FunSuite with ShouldMatchers {
     val marker = new Marker {
       val name = "Test"
       val fs = 10.0
-      val co = Vector[(Double, Double, Double)] (
-        (0,8,1), (1,-3,1), (6,0,0), (2,2,-1), (3,5,2), (1,8,0), (6,7,1)
+      val co = Vector[Vec3] (
+        Vec3(0,8,1), Vec3(1,-3,1), Vec3(6,0,0), Vec3(2,2,-1), Vec3(3,5,2), 
+        Vec3(1,8,0), Vec3(6,7,1)
       )
     }
     val xExpected = Vector(-0.10493, 1.07792, 2.09518, 2.93073, 3.77711, 

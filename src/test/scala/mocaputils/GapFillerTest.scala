@@ -9,8 +9,9 @@ class GapFillerTest extends FunSuite with ShouldMatchers {
   test("test linear gap filling - ends empty") {
     val mGap = new GappedMarker {
       val name = "Test"
-      val co = Vector[Option[(Double, Double, Double)]](
-        None, None, Some(1, 2, 3), Some(4, 5, 6), None, Some(8, 9, 10), None
+      val co = Vector[Option[Vec3]](
+        None, None, Some(Vec3(1, 2, 3)), Some(Vec3(4, 5, 6)), None, 
+        Some(Vec3(8, 9, 10)), None
       )
       val fs = 100.0
     }
@@ -26,8 +27,8 @@ class GapFillerTest extends FunSuite with ShouldMatchers {
   test("test linear gap filling - multiple elements") {
     val mGap = new GappedMarker {
       val name = "Test"
-      val co = Vector[Option[(Double, Double, Double)]](
-        Some(1,1,1), None, None, None, None, Some(6,6,6)
+      val co = Vector[Option[Vec3]](
+        Some(Vec3(1,1,1)), None, None, None, None, Some(Vec3(6,6,6))
       )
       val fs = 100.0
     }

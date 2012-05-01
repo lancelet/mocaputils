@@ -9,19 +9,21 @@ import mocaputils.collection.immutable.RichSeq
 /** A marker (without any gaps). */
 trait Marker { self =>
   
+  import Marker._
+  
   /** Name of the marker. */
   val name: String
   /** Marker coordinates. */
-  val co: IndexedSeq[(Double, Double, Double)]
+  val co: IndexedSeq[Vec3]
   /** Sample frequency (Hz). */
   val fs: Double
   
   /** `x`-values of the marker coordinates */
-  lazy val xs: IndexedSeq[Double] = co.map(_._1)
+  lazy val xs: IndexedSeq[Double] = Vec3IndexedSeqX(co)
   /** `y`-values of the marker coordinates */
-  lazy val ys: IndexedSeq[Double] = co.map(_._2)
+  lazy val ys: IndexedSeq[Double] = Vec3IndexedSeqY(co)
   /** `z`-values of the marker coordinates */
-  lazy val zs: IndexedSeq[Double] = co.map(_._3)
+  lazy val zs: IndexedSeq[Double] = Vec3IndexedSeqZ(co)
   
   /** Estimate of the bandwidth of the marker. 
    * 
@@ -54,7 +56,7 @@ trait Marker { self =>
   def discontinuities(threshold: Double): Seq[(Int, Int)] = {
     // compute deltas between pairs of coordinates
     val deltas = for ((x1, x2) <- co.dropRight(1) zip co.drop(1)) yield {
-      val (dx, dy, dz) = (x2._1 - x1._1, x2._2 - x1._2, x2._3 - x1._3)
+      val (dx, dy, dz) = (x2.x - x1.x, x2.y - x1.y, x2.z - x1.z)
       sqrt(dx * dx + dy * dy + dz * dz)
     }    
     // find regions where deltas are > threshold
@@ -66,22 +68,62 @@ trait Marker { self =>
    *  
    *  @param fc cutoff frequency
    *  @return new marker with filtered coordinates */
-  def butter2(fc: Double): Marker = new Marker {
-    val name = self.name
-    val fs = self.fs
+  def butter2(fc: Double): Marker = {
     // pull Butterworth coefficients from a single second-order-section filter
-    private val sos = Butter.butterSOSEven(2, fc / (fs / 2)).head
-    private val b = List(sos.b0, sos.b1, sos.b2)
-    private val a = List(1, sos.a1, sos.a2)
-    override lazy val xs = FiltFilt.filtfilt(b, a, self.xs)
-    override lazy val ys = FiltFilt.filtfilt(b, a, self.ys)
-    override lazy val zs = FiltFilt.filtfilt(b, a, self.zs)
+    val sos = Butter.butterSOSEven(2, fc / (fs / 2)).head
+    val b = List(sos.b0, sos.b1, sos.b2)
+    val a = List(1, sos.a1, sos.a2)
+    val xs = FiltFilt.filtfilt(b, a, self.xs)
+    val ys = FiltFilt.filtfilt(b, a, self.ys)
+    val zs = FiltFilt.filtfilt(b, a, self.zs)
     assert(xs.length == ys.length)
     assert(xs.length == zs.length)
-    override val co = new IndexedSeq[(Double, Double, Double)] {
-      val length = xs.length
-      def apply(item: Int) = (xs(item), ys(item), zs(item))
-    }
+    ButterMarker(self.name, self.fs, xs, ys, zs)
+  }
+  
+}
+
+object Marker {
+  
+  private case class ButterMarker(
+    name: String,
+    fs: Double,
+    val xs_parm: IndexedSeq[Double],
+    val ys_parm: IndexedSeq[Double],
+    val zs_parm: IndexedSeq[Double]
+  ) extends Marker {
+    val co: IndexedSeq[Vec3] = ButterMarkerCo(xs, ys, zs)
+    override lazy val xs = xs_parm
+    override lazy val ys = ys_parm
+    override lazy val zs = zs_parm
+  }
+  
+  private case class ButterMarkerCo(
+    xs: IndexedSeq[Double],
+    ys: IndexedSeq[Double],
+    zs: IndexedSeq[Double]
+  ) extends IndexedSeq[Vec3] {
+    assert(xs.length == ys.length && xs.length == zs.length)
+    def length: Int = xs.length
+    def apply(index: Int): Vec3 = Vec3(xs(index), ys(index), zs(index))
+  }
+  
+  private case class Vec3IndexedSeqX(co: IndexedSeq[Vec3])
+  extends IndexedSeq[Double] {
+    def length: Int = co.length
+    def apply(index: Int): Double = co(index).x
+  }
+
+  private case class Vec3IndexedSeqY(co: IndexedSeq[Vec3])
+  extends IndexedSeq[Double] {
+    def length: Int = co.length
+    def apply(index: Int): Double = co(index).y
+  }
+  
+  private case class Vec3IndexedSeqZ(co: IndexedSeq[Vec3])
+  extends IndexedSeq[Double] {
+    def length: Int = co.length
+    def apply(index: Int): Double = co(index).z
   }
   
 }

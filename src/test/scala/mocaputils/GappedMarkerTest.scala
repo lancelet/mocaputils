@@ -7,8 +7,8 @@ class GappedMarkerTest extends FunSuite {
 
   private val m = new GappedMarker {
     val name = "Test"
-    val co = Vector[Option[(Double, Double, Double)]](
-      None, None, Some(1,2,3), Some(4,5,6), Some(7,8,9), None
+    val co = Vector[Option[Vec3]](
+      None, None, Some(Vec3(1,2,3)), Some(Vec3(4,5,6)), Some(Vec3(7,8,9)), None
     )
     val fs = 100.0
   }
@@ -43,7 +43,7 @@ class GappedMarkerTest extends FunSuite {
     assert(m.exists === true)
     val mNoCoords = new GappedMarker {
       val name = "NotPresent"
-      val co = Vector[Option[(Double, Double, Double)]](None, None, None)
+      val co = Vector[Option[Vec3]](None, None, None)
       val fs = 100.0
     }
     assert(mNoCoords.exists === false)

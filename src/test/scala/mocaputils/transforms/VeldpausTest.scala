@@ -20,6 +20,8 @@ import scalala.tensor.dense.DenseVector
 import scalala.tensor.dense.DenseVectorCol
 import scalala.tensor.Tensor
 
+import mocaputils.Vec3
+
 class VeldpausTest extends FunSuite with Checkers with ShouldMatchers {
 
   private val eps = 1.0e-10
@@ -34,8 +36,8 @@ class VeldpausTest extends FunSuite with Checkers with ShouldMatchers {
     // the transformation is:
     //  1. Rotate -90 deg about z.
     //  2. Translate by (-1,1,0)
-    val x = Seq[(Double, Double, Double)]((1,1,0), (2, 1,0), (1,2,0))
-    val y = Seq[(Double, Double, Double)]((0,0,0), (0,-1,0), (1,0,0))
+    val x = Seq[Vec3](Vec3(1,1,0), Vec3(2, 1,0), Vec3(1,2,0))
+    val y = Seq[Vec3](Vec3(0,0,0), Vec3(0,-1,0), Vec3(1,0,0))
     val vr = Veldpaus.veldpaus(x zip y)
     
     val Rexpected = DenseMatrix(
@@ -95,10 +97,10 @@ class VeldpausTest extends FunSuite with Checkers with ShouldMatchers {
   test("veldpaus random") {
     // check that for random, but not noisy transforms, veldpaus works
     check((R: RotationMatrix, v: OffsetVector) => {
-      def vecToTuple(vec: DenseVector[Double]) = (vec(0), vec(1), vec(2))
+      def vecToVec(vec: DenseVector[Double]) = Vec3(vec(0), vec(1), vec(2))
       val ys = cluster.map(R.m * _ + v.v)  // transform marker cluster
       val vr = Veldpaus.veldpaus(
-        cluster.map(vecToTuple) zip ys.map(vecToTuple))
+        cluster.map(vecToVec) zip ys.map(vecToVec))
       // check rotation matrix
       val rotCheck = absmax(vr.R - R.m) < 1e-4
       // check offset vector
@@ -115,7 +117,7 @@ class VeldpausTest extends FunSuite with Checkers with ShouldMatchers {
     // check that for random transforms, with noise added to the markers,
     //  we still get approximately the correct result
     check((R: RotationMatrix, v: OffsetVector) => {
-      def vecToTuple(vec: DenseVector[Double]) = (vec(0), vec(1), vec(2))
+      def vecToVec(vec: DenseVector[Double]) = Vec3(vec(0), vec(1), vec(2))
       val ys = cluster.map(R.m * _ + v.v)  // gold standard y positions
       // add random noise to the y positions
       val randomVecs = List.fill[DenseVectorCol[Double]](ys.length) {
@@ -126,11 +128,11 @@ class VeldpausTest extends FunSuite with Checkers with ShouldMatchers {
       
       // compute the transformation
       val vr = Veldpaus.veldpaus(
-        cluster.map(vecToTuple) zip ys.map(vecToTuple))
+        cluster.map(vecToVec) zip ys.map(vecToVec))
       
       // map the cluster to their least-squares ys positions
-      val ysLsq = cluster.map(vecToTuple).map(vr).map(t =>
-        DenseVectorCol(t._1, t._2, t._3))
+      val ysLsq = cluster.map(vecToVec).map(vr).map(t =>
+        DenseVectorCol(t.x, t.y, t.z))
         
       // test errors
       val errors = for ((y, yl) <- ys zip ysLsq) yield norm(y - yl, 2)
