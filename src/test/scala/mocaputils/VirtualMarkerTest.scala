@@ -14,17 +14,17 @@ class VirtualMarkerTest extends FunSuite with ShouldMatchers {
     //  been calculated manually.  the transformation is:
     //   1. rotate -90 deg about z
     //   2. translate by (-1,1,0)
-    val marker1 = new Marker {
+    val marker1 = new Marker with Marker.XYZFromCo {
       val name = "marker1"
       val fs = 1.0
       val co = IndexedSeq[Vec3](Vec3(1,1,0), Vec3(0,0,0))
     }
-    val marker2 = new Marker {
+    val marker2 = new Marker with Marker.XYZFromCo {
       val name = "marker2"
       val fs = 1.0
       val co = IndexedSeq[Vec3](Vec3(2,1,0), Vec3(0,-1,0))
     }
-    val marker3 = new Marker {
+    val marker3 = new Marker with Marker.XYZFromCo {
       val name = "marker3"
       val fs = 1.0
       val co = IndexedSeq[Vec3](Vec3(1,2,0), Vec3(1,0,0))

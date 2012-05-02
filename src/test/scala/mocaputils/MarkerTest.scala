@@ -7,7 +7,7 @@ import Comparisons._
 
 class MarkerTest extends FunSuite with ShouldMatchers {
 
-  private val m = new Marker {
+  private val m = new Marker with Marker.XYZFromCo {
     val name = "Test"
     val co = Vector[Vec3](
       Vec3(1,2,3), Vec3(4,5,6), Vec3(7,8,9)
@@ -16,7 +16,7 @@ class MarkerTest extends FunSuite with ShouldMatchers {
   }
   
   // a marker with a discontinuity
-  private val mWithDiscont = new Marker {
+  private val mWithDiscont = new Marker with Marker.XYZFromCo {
     val name = "Test-WithDiscont"
     val co = Vector[Vec3](
       Vec3(0,0,0), Vec3(0,0,0), Vec3(0,0,0), Vec3(0,0,0),
@@ -51,7 +51,7 @@ class MarkerTest extends FunSuite with ShouldMatchers {
   test("bandwidth") (pending)
   
   test("butter2") {
-    val marker = new Marker {
+    val marker = new Marker with Marker.XYZFromCo {
       val name = "Test"
       val fs = 10.0
       val co = Vector[Vec3] (

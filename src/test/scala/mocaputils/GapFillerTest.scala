@@ -7,7 +7,7 @@ import org.scalatest.matchers.ShouldMatchers
 class GapFillerTest extends FunSuite with ShouldMatchers {
   
   test("test linear gap filling - ends empty") {
-    val mGap = new GappedMarker {
+    val mGap = new GappedMarker.GappedMarkerLike with GappedMarker.XYZFromCo {
       val name = "Test"
       val co = Vector[Option[Vec3]](
         None, None, Some(Vec3(1, 2, 3)), Some(Vec3(4, 5, 6)), None, 
@@ -25,7 +25,7 @@ class GapFillerTest extends FunSuite with ShouldMatchers {
   }
   
   test("test linear gap filling - multiple elements") {
-    val mGap = new GappedMarker {
+    val mGap = new GappedMarker.GappedMarkerLike with GappedMarker.XYZFromCo {
       val name = "Test"
       val co = Vector[Option[Vec3]](
         Some(Vec3(1,1,1)), None, None, None, None, Some(Vec3(6,6,6))

@@ -47,13 +47,7 @@ object GapFiller {
       }
 
     // new marker
-    Some(MarkerCase(m.name, m.fs, coVector))
+    Some(Marker.Vec3Marker(m.name, m.fs, coVector))
   }
 
-  private final case class MarkerCase(
-    name: String,
-    fs: Double,
-    co: IndexedSeq[Vec3]
-  ) extends Marker
-  
 }

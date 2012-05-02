@@ -12,18 +12,18 @@ trait Marker { self =>
   import Marker._
   
   /** Name of the marker. */
-  val name: String
+  def name: String
   /** Marker coordinates. */
-  val co: IndexedSeq[Vec3]
+  def co: IndexedSeq[Vec3]
   /** Sample frequency (Hz). */
-  val fs: Double
+  def fs: Double
   
   /** `x`-values of the marker coordinates */
-  lazy val xs: IndexedSeq[Double] = Vec3IndexedSeqX(co)
+  def xs: IndexedSeq[Double]// = Vec3IndexedSeqX(co)
   /** `y`-values of the marker coordinates */
-  lazy val ys: IndexedSeq[Double] = Vec3IndexedSeqY(co)
+  def ys: IndexedSeq[Double]// = Vec3IndexedSeqY(co)
   /** `z`-values of the marker coordinates */
-  lazy val zs: IndexedSeq[Double] = Vec3IndexedSeqZ(co)
+  def zs: IndexedSeq[Double]// = Vec3IndexedSeqZ(co)
   
   /** Estimate of the bandwidth of the marker. 
    * 
@@ -78,52 +78,75 @@ trait Marker { self =>
     val zs = FiltFilt.filtfilt(b, a, self.zs)
     assert(xs.length == ys.length)
     assert(xs.length == zs.length)
-    ButterMarker(self.name, self.fs, xs, ys, zs)
+    XYZMarker(self.name, self.fs, xs, ys, zs)
   }
   
 }
 
 object Marker {
   
-  private case class ButterMarker(
-    name: String,
-    fs: Double,
-    val xs_parm: IndexedSeq[Double],
-    val ys_parm: IndexedSeq[Double],
-    val zs_parm: IndexedSeq[Double]
-  ) extends Marker {
-    val co: IndexedSeq[Vec3] = ButterMarkerCo(xs, ys, zs)
-    override lazy val xs = xs_parm
-    override lazy val ys = ys_parm
-    override lazy val zs = zs_parm
+  /** Trait for markers which have separate x, y and z coordinates, and need
+    * to form the co: IndexedSeq[Vec3] coordinates. */
+  trait CoFromXYZ {
+    def xs: IndexedSeq[Double]
+    def ys: IndexedSeq[Double]
+    def zs: IndexedSeq[Double]
+
+    val co: IndexedSeq[Vec3] = XYZCo(xs, ys, zs)
+
+    private case class XYZCo(
+      xs: IndexedSeq[Double],
+      ys: IndexedSeq[Double],
+      zs: IndexedSeq[Double]
+    ) extends IndexedSeq[Vec3] {
+      assert(xs.length == ys.length && xs.length == zs.length)
+      def length: Int = xs.length
+      def apply(index: Int): Vec3 = WrappedVec3(index)
+      private case class WrappedVec3(index: Int) extends Vec3 {
+        def x: Double = xs(index)
+        def y: Double = ys(index)
+        def z: Double = zs(index)
+      }
+    }  
+  }
+
+  /** Trait for markers which have co, and need to form separate x, y and z
+    * coordinates. */
+  trait XYZFromCo {
+    def co: IndexedSeq[Vec3]
+    
+    val xs: IndexedSeq[Double] = IndexedSeqX
+    val ys: IndexedSeq[Double] = IndexedSeqY
+    val zs: IndexedSeq[Double] = IndexedSeqZ
+    
+    sealed private trait EmbeddedIndexSeq extends IndexedSeq[Double] {
+      def length: Int = co.length
+    }
+    private object IndexedSeqX extends EmbeddedIndexSeq {
+      def apply(index: Int): Double = co(index).x
+    }
+    private object IndexedSeqY extends EmbeddedIndexSeq {
+      def apply(index: Int): Double = co(index).y
+    }
+    private object IndexedSeqZ extends EmbeddedIndexSeq {
+      def apply(index: Int): Double = co(index).z
+    }        
   }
   
-  private case class ButterMarkerCo(
+  /** Marker defined in terms of separate x, y and z coordinates. */
+  final case class XYZMarker(
+    name: String,
+    fs: Double,
     xs: IndexedSeq[Double],
     ys: IndexedSeq[Double],
     zs: IndexedSeq[Double]
-  ) extends IndexedSeq[Vec3] {
-    assert(xs.length == ys.length && xs.length == zs.length)
-    def length: Int = xs.length
-    def apply(index: Int): Vec3 = Vec3(xs(index), ys(index), zs(index))
-  }
+  ) extends Marker with CoFromXYZ
   
-  private case class Vec3IndexedSeqX(co: IndexedSeq[Vec3])
-  extends IndexedSeq[Double] {
-    def length: Int = co.length
-    def apply(index: Int): Double = co(index).x
-  }
-
-  private case class Vec3IndexedSeqY(co: IndexedSeq[Vec3])
-  extends IndexedSeq[Double] {
-    def length: Int = co.length
-    def apply(index: Int): Double = co(index).y
-  }
-  
-  private case class Vec3IndexedSeqZ(co: IndexedSeq[Vec3])
-  extends IndexedSeq[Double] {
-    def length: Int = co.length
-    def apply(index: Int): Double = co(index).z
-  }
+  /** Marker defined in terms of an IndexedSeq[Vec3]. */
+  final case class Vec3Marker(
+    name: String,
+    fs: Double,
+    co: IndexedSeq[Vec3]
+  ) extends Marker with XYZFromCo
   
 }

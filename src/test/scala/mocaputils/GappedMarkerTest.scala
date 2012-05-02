@@ -5,7 +5,8 @@ import org.scalatest.FunSuite
 
 class GappedMarkerTest extends FunSuite {
 
-  private val m = new GappedMarker {
+  private val m = new GappedMarker.GappedMarkerLike 
+  with GappedMarker.XYZFromCo {
     val name = "Test"
     val co = Vector[Option[Vec3]](
       None, None, Some(Vec3(1,2,3)), Some(Vec3(4,5,6)), Some(Vec3(7,8,9)), None
@@ -41,7 +42,8 @@ class GappedMarkerTest extends FunSuite {
   
   test("check the exists flag") {
     assert(m.exists === true)
-    val mNoCoords = new GappedMarker {
+    val mNoCoords = new GappedMarker.GappedMarkerLike 
+    with GappedMarker.XYZFromCo {
       val name = "NotPresent"
       val co = Vector[Option[Vec3]](None, None, None)
       val fs = 100.0

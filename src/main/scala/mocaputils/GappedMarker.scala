@@ -15,30 +15,72 @@ import mocaputils.collection.immutable.RichSeq
 trait GappedMarker {
 
   /** Name of the marker. */
-  val name: String
+  def name: String
 
   /** Coordinates of the marker. */
-  val co: IndexedSeq[Option[Vec3]]
+  def co: IndexedSeq[Option[Vec3]]
 
   /** Whether the marker exists - it exists if some coordinates are present. */
-  lazy val exists: Boolean = co.exists(_.isDefined)
+  def exists: Boolean
   
   /** Sample frequency (Hz). */
-  val fs: Double
+  def fs: Double
   
   /** Range of frames (inclusive) over which the marker is defined. */
-  lazy val range: (Int, Int) = 
-    (co.indexWhere(_.isDefined), co.lastIndexWhere(_.isDefined)) 
+  def range: (Int, Int) 
   
   /** `x`-values of the marker coordinates. */
-  lazy val xs: IndexedSeq[Option[Double]] = co.map(_.map(_.x))
+  def xs: IndexedSeq[Option[Double]]
   /** `y`-values of the marker coordinates. */
-  lazy val ys: IndexedSeq[Option[Double]] = co.map(_.map(_.y))
+  def ys: IndexedSeq[Option[Double]]
   /** `z`-values of the marker coordinates. */
-  lazy val zs: IndexedSeq[Option[Double]] = co.map(_.map(_.z))
+  def zs: IndexedSeq[Option[Double]]
   
   /** Sequence of gaps in the marker data (slices in which the coordinates
    *  are not defined). */
-  lazy val gaps: Seq[(Int, Int)] = RichSeq(co).slicesWhere(!_.isDefined)
+  def gaps: Seq[(Int, Int)]
 
+}
+
+object GappedMarker {
+
+  /** Template trait for GappedMarkers. */
+  trait GappedMarkerLike extends GappedMarker {
+    lazy val exists: Boolean = co.exists(_.isDefined)
+    lazy val range: (Int, Int) = 
+      (co.indexWhere(_.isDefined), co.lastIndexWhere(_.isDefined))
+    lazy val gaps: Seq[(Int, Int)] = RichSeq(co).slicesWhere(!_.isDefined)
+  }
+  
+  /** Trait for GappedMarkers which have co, and need to form separate x,
+    * y and z. */
+  trait XYZFromCo {
+    def co: IndexedSeq[Option[Vec3]]
+    
+    val xs: IndexedSeq[Option[Double]] = IndexedSeqX
+    val ys: IndexedSeq[Option[Double]] = IndexedSeqY
+    val zs: IndexedSeq[Option[Double]] = IndexedSeqZ
+    
+    sealed private trait EmbeddedIndexSeq extends IndexedSeq[Option[Double]] {
+      def length: Int = co.length
+    }
+    private object IndexedSeqX extends EmbeddedIndexSeq {
+      def apply(index: Int): Option[Double] = co(index).map(_.x)
+    }
+    private object IndexedSeqY extends EmbeddedIndexSeq {
+      def apply(index: Int): Option[Double] = co(index).map(_.y)
+    }
+    private object IndexedSeqZ extends EmbeddedIndexSeq {
+      def apply(index: Int): Option[Double] = co(index).map(_.z)
+    }
+  }
+  
+  /** GappedMarker which is defined in terms of an IndexedSeq of Option[Vec3].
+    * */
+  final case class Vec3GappedMarker (
+    name: String,
+    co: IndexedSeq[Option[Vec3]],
+    fs: Double
+  ) extends GappedMarkerLike with XYZFromCo
+  
 }

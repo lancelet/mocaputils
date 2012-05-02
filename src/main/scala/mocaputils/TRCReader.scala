@@ -3,7 +3,6 @@ package mocaputils
 import java.io.IOException
 import scala.collection.breakOut
 import scala.collection.immutable._
-import scala.collection.mutable.ArrayBuffer
 import io.Source
 import scalaz.{ Validation, Success, Failure }
 
@@ -118,59 +117,39 @@ object TRCReader {
     }
 
     // read coordinate lines from the remainder of the file
-    val groupedCoords: ArrayBuffer[ArrayBuffer[Option[Vec3]]] =
-      ArrayBuffer()
-    for (line <- inputLines) {
-      val ords = line.split("\t", -1).drop(2).take(nm * 3).map(_.trim)
-      assert(ords.length == nm * 3)
-      val coordLine: ArrayBuffer[Option[Vec3]] = ArrayBuffer()
-      for (o3 <- ords.grouped(3)) {
-        val appendValue = if (o3.exists(_.isEmpty)) {
-          None
-        } else {
-          val d = o3.map(_.toDouble)
-          Some(Vec3(d(0), d(1), d(2)))
+    val groupedCoords: Vector[Vector[Option[Vec3]]] = {
+      val groupedCoordsBuilder = new VectorBuilder[Vector[Option[Vec3]]]
+      groupedCoordsBuilder.sizeHint(nf) // number of frames
+      for (line <- inputLines) {
+        val ords = line.split("\t", -1).drop(2).take(nm * 3).map(_.trim)
+        assert(ords.length == nm * 3)
+        val coordLine = new VectorBuilder[Option[Vec3]]()
+        coordLine.sizeHint(nm) // one Option[Vec3] per marker
+        for (o3 <- ords.grouped(3)) {
+          val appendValue = if (o3.exists(_.isEmpty)) {
+            None
+          } else {
+            val d = o3.map(_.toDouble)
+            Some(Vec3(d(0), d(1), d(2)))
+          }
+          coordLine += appendValue
         }
-        coordLine += appendValue
+        groupedCoordsBuilder += coordLine.result
       }
-      groupedCoords += coordLine
+      groupedCoordsBuilder.result
     }
     val markerCoords = groupedCoords.transpose
     
-    /*
-    type D3 = (Double, Double, Double)
-    val groupedCoords: IndexedSeq[IndexedSeq[Option[D3]]] =
-      inputLines.map(line => {
-        val ords = line.split("\t", -1).drop(2).take(nm * 3).map(_.trim)
-        assert(ords.length == nm * 3)
-        val optionCoords: IndexedSeq[Option[D3]] =
-          (for (o3 <- ords.grouped(3)) yield {
-            if (o3.exists(_.isEmpty)) None
-            else {
-              val d = o3.map(_.toDouble)
-              Some((d(0), d(1), d(2)))
-            }
-          }).toIndexedSeq
-      })(breakOut)
-    val markerCoords = groupedCoords.transpose
-    */
-
     // convert marker coordinates to markers
     assert(markerNames.size == markerCoords.size)
     val markers: IndexedSeq[GappedMarker] = 
       (for ((n, c) <- markerNames zip markerCoords) yield
-         GappedMarkerCase(n, c.toIndexedSeq, cr))(breakOut)
+         GappedMarker.Vec3GappedMarker(n, c, cr))(breakOut)
 
     // return the TRC data
     Success(TRCDataCase(markers, fileName, dr, cr, nf, nm, u, or, os, on))
   }
-  
-  private final case class GappedMarkerCase(
-    name: String,
-    co: IndexedSeq[Option[Vec3]],
-    fs: Double
-  ) extends GappedMarker
-  
+    
   private final case class TRCDataCase(
     markers: IndexedSeq[GappedMarker],
     internalFileName: String,

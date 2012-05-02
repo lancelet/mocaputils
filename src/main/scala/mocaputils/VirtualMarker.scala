@@ -21,12 +21,11 @@ import mocaputils.transforms.Veldpaus.veldpaus
  *  @param refPos reference position of the virtual marker
  *  @param refMarkers a sequence of reference positions for the tracked
  *    markers and the markers themselves */
-final case class VirtualMarker(
+final case class VirtualMarker (
   val name: String,
   refPos: Vec3,
   refMarkers: Seq[(Vec3, Marker)]
-) extends Marker
-{
+) extends Marker with Marker.XYZFromCo {
   private val (ref, markers) = refMarkers.unzip
   
   // must have at least 3 markers
