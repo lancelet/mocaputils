@@ -39,7 +39,21 @@ trait GappedMarker {
   /** Sequence of gaps in the marker data (slices in which the coordinates
    *  are not defined). */
   def gaps: Seq[(Int, Int)]
-
+  
+  /** Take a sub-set of the marker's coordinates.
+    * 
+    * This creates a new GappedMarker, in which the new index zero is 
+    * `firstIndex` from this marker.  `untilIndex-1` is the last index
+    * included (the same syntax as `0 until 5`).
+    * 
+    * @param firstIndex index to slice from (becomes index 0 in the new
+    *   marker).
+    * @param untilIndex limiting index.
+    * 
+    * @return new gapped marker sliced from the required range
+    */
+  def slice(firstIndex: Int, untilIndex: Int): GappedMarker
+  
 }
 
 object GappedMarker {
@@ -50,6 +64,8 @@ object GappedMarker {
     lazy val range: (Int, Int) = 
       (co.indexWhere(_.isDefined), co.lastIndexWhere(_.isDefined))
     lazy val gaps: Seq[(Int, Int)] = RichSeq(co).slicesWhere(!_.isDefined)
+    def slice(firstIndex: Int, untilIndex: Int): GappedMarker =
+      Vec3GappedMarker(name, co.slice(firstIndex, untilIndex), fs)
   }
   
   /** Trait for GappedMarkers which have co, and need to form separate x,

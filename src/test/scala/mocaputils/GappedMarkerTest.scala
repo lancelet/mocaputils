@@ -51,4 +51,11 @@ class GappedMarkerTest extends FunSuite {
     assert(mNoCoords.exists === false)
   }
   
+  test("check that slice works") {
+    val expected = Vector[Option[Vec3]](
+      Some(Vec3(1,2,3)), Some(Vec3(4,5,6)), Some(Vec3(7,8,9)), None
+    )
+    assert(m.slice(2, 6).co === expected)
+  }
+  
 }
