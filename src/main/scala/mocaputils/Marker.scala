@@ -102,7 +102,7 @@ object Marker {
       assert(xs.length == ys.length && xs.length == zs.length)
       def length: Int = xs.length
       def apply(index: Int): Vec3 = WrappedVec3(index)
-      private case class WrappedVec3(index: Int) extends Vec3 {
+      private case class WrappedVec3(index: Int) extends Vec3 with Vec3.Ops {
         def x: Double = xs(index)
         def y: Double = ys(index)
         def z: Double = zs(index)
