@@ -6,6 +6,7 @@ trait Vec3 {
   def z: Double
   
   def +(v: Vec3): Vec3
+  def -(v: Vec3): Vec3
   def /(d: Double): Vec3
 }
 
@@ -14,6 +15,7 @@ object Vec3 {
   
   trait Ops { self: Vec3 =>
     def +(v: Vec3): Vec3 = SimpleVec3(x + v.x, y + v.y, z + v.z)
+    def -(v: Vec3): Vec3 = SimpleVec3(x - v.x, y - v.y, z - v.z)
     def /(d: Double): Vec3 = SimpleVec3(x / d, y / d, z / d)
   }
   
