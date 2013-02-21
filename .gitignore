@@ -14,3 +14,5 @@ project-old/plugins/src_managed
 .settings
 project/boot
 .cache
+.idea
+.idea_modules

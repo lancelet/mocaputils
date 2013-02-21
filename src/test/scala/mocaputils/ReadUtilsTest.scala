@@ -2,13 +2,13 @@ package mocaputils
 
 import scala.collection.immutable.Vector
 import org.scalatest.FunSuite
-import scalaz.{ Success, Failure }
+import scalaz.Success
 
 class ReadUtilsTest extends FunSuite {
 
   test("nextLine") {
     val it = List("Test").iterator
-    assert(ReadUtils.nextLine(it) === Success("Test"))
+    assert(convertToEqualizer(ReadUtils.nextLine(it)) === Success("Test"))
     assert(ReadUtils.nextLine(it).isFailure)
   }
 

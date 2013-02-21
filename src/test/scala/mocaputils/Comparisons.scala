@@ -1,7 +1,7 @@
 package mocaputils
 
 import org.scalatest.matchers.ShouldMatchers._
-import scalala.scalar.Complex
+import breeze.math.Complex
 
 /** Performs comparisons for testing purposes. */
 object Comparisons {

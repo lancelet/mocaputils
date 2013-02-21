@@ -4,15 +4,11 @@ import scala.collection.immutable.Seq
 import scala.collection.immutable.Traversable
 import scala.math.sqrt
 
-import scalala.library.LinearAlgebra.cross
-import scalala.library.LinearAlgebra.det
-import scalala.library.LinearAlgebra.inv
-import scalala.library.LinearAlgebra.rank
-import scalala.tensor.dense.DenseMatrix
-import scalala.tensor.dense.DenseVectorCol
-import scalala.tensor.{:: => $colon$colon}
-import scalala.tensor.VectorCol
-import scalala.tensor.Matrix
+import breeze.linalg.LinearAlgebra.{ cross, det, inv, rank }
+import breeze.linalg.DenseMatrix
+import breeze.linalg.DenseVector
+import breeze.linalg.Vector
+import breeze.linalg.Matrix
 
 import mocaputils.Vec3
 
@@ -27,18 +23,18 @@ import mocaputils.Vec3
  *  @param ybar centroid of transformed set of coordinates */
 case class VeldpausResult(
   R: Matrix[Double],
-  v: VectorCol[Double],
+  v: Vector[Double],
   s: Double,
-  xbar: VectorCol[Double],
-  ybar: VectorCol[Double]
+  xbar: Vector[Double],
+  ybar: Vector[Double]
 ) extends XForm {
-  require(R.numCols == 3 && R.numRows == 3)
+  require(R.cols == 3 && R.cols == 3)
   require(v.size == 3)
   require(xbar.size == 3)
   require(ybar.size == 3)
   def apply(x: Vec3): Vec3 = {
-    val xvec = DenseVectorCol(x.x, x.y, x.z)
-    val yvec = R * s * xvec + v
+    val xvec = DenseVector(x.x, x.y, x.z)
+    val yvec = R * xvec * s + v
     Vec3(yvec(0), yvec(1), yvec(2))
   }
 }
@@ -77,9 +73,9 @@ object Veldpaus {
   {
     // find x,y coordinates, centroids, and positions relative to centroids
     val (xc, yc) = points.toList.unzip
-    val x = xc.map(v => DenseVectorCol(v.x, v.y, v.z))
-    val y = yc.map(v => DenseVectorCol(v.x, v.y, v.z))
-    def meanv(q: Seq[DenseVectorCol[Double]]): DenseVectorCol[Double] =
+    val x = xc.map(v => DenseVector(v.x, v.y, v.z))
+    val y = yc.map(v => DenseVector(v.x, v.y, v.z))
+    def meanv(q: Seq[DenseVector[Double]]): DenseVector[Double] =
       q.reduceLeft(_ + _) / q.length.toDouble
     val (xbar, ybar) = (meanv(x), meanv(y))
     val (xprime, yprime) = (x.map(_ - xbar), y.map(_ - ybar))
@@ -147,10 +143,10 @@ object Veldpaus {
    *  @param m matrix for which to compute the adjoint
    *  @return adjoint matrix */
   private def adjoint3(m: Matrix[Double]): DenseMatrix[Double] = {
-    require(m.numCols == 3 && m.numRows == 3)
-    val c1 = new DenseVectorCol(m(::, 0).toArray)
-    val c2 = new DenseVectorCol(m(::, 1).toArray)
-    val c3 = new DenseVectorCol(m(::, 2).toArray)
+    require(m.cols == 3 && m.rows == 3)
+    val c1 = new DenseVector(m(0 to 2, 0 to 0).toDenseMatrix.copy.data)  // efficiency: we're doing it wrong? :-)
+    val c2 = new DenseVector(m(0 to 2, 1 to 1).toDenseMatrix.copy.data)
+    val c3 = new DenseVector(m(0 to 2, 2 to 2).toDenseMatrix.copy.data)
     val at = DenseMatrix(
       cross(c2, c3).toArray,
       cross(c3, c1).toArray,

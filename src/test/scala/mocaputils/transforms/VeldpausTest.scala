@@ -13,12 +13,10 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.prop.Checkers
 import org.scalatest.FunSuite
 
-import scalala.library.Library.norm
-import scalala.library.LinearAlgebra.det
-import scalala.tensor.dense.DenseMatrix
-import scalala.tensor.dense.DenseVector
-import scalala.tensor.dense.DenseVectorCol
-import scalala.tensor.Tensor
+import breeze.linalg.{ det, norm }
+import breeze.linalg.DenseMatrix
+import breeze.linalg.DenseVector
+import breeze.linalg.Tensor
 
 import mocaputils.Vec3
 
@@ -44,20 +42,20 @@ class VeldpausTest extends FunSuite with Checkers with ShouldMatchers {
       Array[Double]( 0, 1, 0),
       Array[Double](-1, 0, 0),
       Array[Double]( 0, 0, 1))
-    val vexpected = DenseVectorCol(-1.0, 1.0, 0.0)
-    val xbarexpected = DenseVectorCol(1 + 1.0/3.0, 1 + 1.0/3.0, 0.0)
-    val ybarexpected = DenseVectorCol(1.0/3.0, -1.0/3.0, 0.0)
-    absmax(vr.R - Rexpected) should be < (eps)
-    absmax(vr.v - vexpected) should be < (eps)
+    val vexpected = DenseVector(-1.0, 1.0, 0.0)
+    val xbarexpected = DenseVector(1 + 1.0/3.0, 1 + 1.0/3.0, 0.0)
+    val ybarexpected = DenseVector(1.0/3.0, -1.0/3.0, 0.0)
+    absmax(vr.R.toDenseMatrix - Rexpected) should be < (eps)
+    absmax(vr.v.toDenseVector - vexpected) should be < (eps)
     vr.s should be (1.0 plusOrMinus eps)
-    absmax(vr.xbar - xbarexpected) should be < (eps)
-    absmax(vr.ybar - ybarexpected) should be < (eps)
+    absmax(vr.xbar.toDenseVector - xbarexpected) should be < (eps)
+    absmax(vr.ybar.toDenseVector - ybarexpected) should be < (eps)
   }
 
   // arbitrary offset vectors and rotation matrices for ScalaCheck / ScalaTest
-  case class OffsetVector(v: DenseVectorCol[Double]) { assert(v.length == 3) }
+  case class OffsetVector(v: DenseVector[Double]) { assert(v.length == 3) }
   case class RotationMatrix(m: DenseMatrix[Double]) {
-    assert(m.numRows == 3 && m.numCols == 3)
+    assert(m.rows == 3 && m.cols == 3)
     require(abs(det(m) - 1.0) < 1.0e-5) // det(m) == 1
   }
   implicit def arbOffsetVector: Arbitrary[OffsetVector] = Arbitrary {
@@ -65,7 +63,7 @@ class VeldpausTest extends FunSuite with Checkers with ShouldMatchers {
       vs <- Gen.containerOfN[Array, Double](3,
         Gen.chooseNum[Double](-100.0, 100.0))
       if (vs.sum != 0.0)
-    } yield OffsetVector(DenseVectorCol(vs(0), vs(1), vs(2)))
+    } yield OffsetVector(DenseVector(vs(0), vs(1), vs(2)))
   }
   implicit def arbRotationMatrix: Arbitrary[RotationMatrix] = Arbitrary {
     for {
@@ -89,10 +87,10 @@ class VeldpausTest extends FunSuite with Checkers with ShouldMatchers {
   
   // simulated marker cluster
   val cluster = Seq(
-    DenseVectorCol( 0.0,  0.0, 0.0),
-    DenseVectorCol(10.0,  0.0, 2.0),
-    DenseVectorCol(-5.0,  4.0, 3.0),
-    DenseVectorCol(-8.0, -2.0, 2.0))
+    DenseVector( 0.0,  0.0, 0.0),
+    DenseVector(10.0,  0.0, 2.0),
+    DenseVector(-5.0,  4.0, 3.0),
+    DenseVector(-8.0, -2.0, 2.0))
   
   test("veldpaus random") {
     // check that for random, but not noisy transforms, veldpaus works
@@ -102,9 +100,9 @@ class VeldpausTest extends FunSuite with Checkers with ShouldMatchers {
       val vr = Veldpaus.veldpaus(
         cluster.map(vecToVec) zip ys.map(vecToVec))
       // check rotation matrix
-      val rotCheck = absmax(vr.R - R.m) < 1e-4
+      val rotCheck = absmax(vr.R.toDenseMatrix - R.m) < 1e-4
       // check offset vector
-      val vectorCheck = norm(vr.v - v.v, 2) < 1e-4
+      val vectorCheck = norm(vr.v.toDenseVector - v.v, 2) < 1e-4
       // check scale
       val scaleCheck = abs(vr.s - 1) < 1e-4
       
@@ -120,9 +118,9 @@ class VeldpausTest extends FunSuite with Checkers with ShouldMatchers {
       def vecToVec(vec: DenseVector[Double]) = Vec3(vec(0), vec(1), vec(2))
       val ys = cluster.map(R.m * _ + v.v)  // gold standard y positions
       // add random noise to the y positions
-      val randomVecs = List.fill[DenseVectorCol[Double]](ys.length) {
+      val randomVecs = List.fill[DenseVector[Double]](ys.length) {
         def r: Double = scala.util.Random.nextGaussian
-        DenseVectorCol(r, r, r) * noiseAmt
+        DenseVector(r, r, r) * noiseAmt
       }
       val ysNoisy = for ((y, r) <- ys zip randomVecs) yield (y + r)
       
@@ -132,7 +130,7 @@ class VeldpausTest extends FunSuite with Checkers with ShouldMatchers {
       
       // map the cluster to their least-squares ys positions
       val ysLsq = cluster.map(vecToVec).map(vr).map(t =>
-        DenseVectorCol(t.x, t.y, t.z))
+        DenseVector(t.x, t.y, t.z))
         
       // test errors
       val errors = for ((y, yl) <- ys zip ysLsq) yield norm(y - yl, 2)

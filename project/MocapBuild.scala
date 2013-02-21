@@ -3,8 +3,8 @@ import Keys._
 
 object BuildSettings {
   val buildOrganization = "com.github.mocaputils"
-  val buildScalaVersion = "2.9.2"
-  val buildVersion      = "0.2-SNAPSHOT"
+  val buildScalaVersion = "2.10.0"
+  val buildVersion      = "0.3-SNAPSHOT"
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
     scalaVersion := buildScalaVersion,
@@ -21,15 +21,15 @@ object Resolvers {
 object Dependencies {
   val jCommon     = "org.jfree" % "jcommon" % "1.0.17"
   val jFreeChart  = "org.jfree" % "jfreechart" % "1.0.14"
-  val xmlGraphics = "org.apache.xmlgraphics" % "xmlgraphics-commons" % "1.4"
-  val iText       = "com.lowagie" % "itext" % "2.1.5" intransitive()
-  val scalaz      = "org.scalaz" %% "scalaz-core" % "7.0-SNAPSHOT"
-  val scalaTest   = "org.scalatest" %% "scalatest" % "1.7.2" % "test"
-  val scalaCheck  = "org.scalacheck" %% "scalacheck" % "1.9" % "test"
-  val scalala     = "org.scalala" % "scalala_2.9.1" % "1.0.0.RC2"
+  val xmlGraphics = "org.apache.xmlgraphics" % "xmlgraphics-commons" % "1.5"
+  val iText       = "com.lowagie" % "itext" % "4.2.0" intransitive()
+  val scalaz      = "org.scalaz" %% "scalaz-core" % "7.0.0-M7"
+  val scalaTest   = "org.scalatest" %% "scalatest" % "1.9.1" % "test"
+  val scalaCheck  = "org.scalacheck" %% "scalacheck" % "1.10.0" % "test"
+  val breeze      = "org.scalanlp" %% "breeze-math" % "0.2-SNAPSHOT"
   val allDependencies = Seq(
     jCommon, jFreeChart, xmlGraphics, iText, scalaz, scalaTest, scalaCheck, 
-    scalala
+    breeze
   )
 }
 
