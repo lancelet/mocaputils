@@ -1,5 +1,7 @@
 package mocaputils.plotting
 
+import scala.language.reflectiveCalls
+
 import java.awt.Graphics2D
 import java.awt.geom.Rectangle2D
 import java.io.{BufferedOutputStream, File, FileOutputStream, OutputStream}

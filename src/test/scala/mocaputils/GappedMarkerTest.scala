@@ -33,7 +33,7 @@ class GappedMarkerTest extends FunSuite {
   }
   
   test("check that range is correctly evaluated") {
-    assert(m.range === (2,4))  
+    assert(m.range === Tuple2(2,4))
   }
   
   test("check that gaps are correctly found") {

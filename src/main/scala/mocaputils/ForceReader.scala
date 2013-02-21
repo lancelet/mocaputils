@@ -1,7 +1,8 @@
 package mocaputils
 
+import scala.language.implicitConversions
 import java.io.IOException
-import collection.immutable._
+import scala.collection.immutable._
 import io.Source
 import scalaz.{ Validation, Success, Failure }
 

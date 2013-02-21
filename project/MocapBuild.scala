@@ -41,7 +41,14 @@ object MocapBuild extends Build {
   lazy val mocaputils = Project("mocaputils", file("."), 
 				settings = buildSettings ++ Seq(
 				  libraryDependencies := allDependencies,
-				  resolvers := allResolvers
+				  resolvers := allResolvers,
+          scalacOptions := Seq(
+            "-Yno-adapted-args",
+            "-Ywarn-all",
+            "-Xfatal-warnings",
+            "-deprecation",
+            "-feature"
+          )
 				)) dependsOn(scalaSignal)
 	// can add scalacOptions := Seq("-unchecked") to settings above
   val scalaSignalUri = uri("git://github.com/lancelet/scalasignal.git")

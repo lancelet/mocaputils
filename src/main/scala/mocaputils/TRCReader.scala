@@ -3,6 +3,7 @@ package mocaputils
 import java.io.IOException
 import scala.collection.breakOut
 import scala.collection.immutable._
+import scala.language.implicitConversions
 import io.Source
 import scalaz.{ Validation, Success, Failure }
 
